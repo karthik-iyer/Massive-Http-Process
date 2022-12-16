@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RequestProcessor.Core\RequestProcessor.Core.csproj" />
+    <ProjectReference Include="..\RequestProcessor.Data\RequestProcessor.Data.csproj" />
+  </ItemGroup>
+
+</Project>
