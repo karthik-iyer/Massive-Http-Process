@@ -1,7 +1,9 @@
 ﻿using RequestProcessor.Core.Models;
 using RequestProcessor.Data.Interfaces;
+using RequestProcessor.Services.BackgroundServices;
 using RequestProcessor.Services.Interfaces;
 using System;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 namespace RequestProcessor.Services
@@ -9,9 +11,12 @@ namespace RequestProcessor.Services
     public class RequestProcessService : IRequestProcessService
     {
         private readonly IJobRepository _jobRepository;
+        private ConcurrentQueue<JobModel> _queuedItems = new ConcurrentQueue<JobModel>();
+
         public RequestProcessService(IJobRepository jobRepository)
         {
             _jobRepository = jobRepository;
+
         }
 
         /// <summary>
@@ -35,7 +40,7 @@ namespace RequestProcessor.Services
         /// </summary>
         /// <param name="httpRequestModel"></param>
         /// <returns></returns>
-        public async Task<string> ProcessBackgroundJob(HttpRequestModel httpRequestModel)
+        public async Task<string> ProcessBackgroundJob(HttpRequestModel httpRequestModel, IBackgroundTaskQueue backgroundTaskQueue)
         {
             var jobId = Guid.NewGuid().ToString();
 
@@ -57,12 +62,15 @@ namespace RequestProcessor.Services
                     jobModel.CurrentJobStatus = JobStatus.NOT_STARTED;
                     jobId = await _jobRepository.SaveJob(jobModel);
                     //queue the job
+                    _queuedItems.Enqueue(jobModel);
+
                 }
                 else if (await _jobRepository.IsMaxNumberOfJobsInRunningState())
                 {
                     jobModel.CurrentJobStatus = JobStatus.NOT_STARTED;
                     jobId = await _jobRepository.SaveJob(jobModel);
                     //Queue the job
+                    _queuedItems.Enqueue(jobModel);
                 }
                 else
                 {
@@ -70,6 +78,12 @@ namespace RequestProcessor.Services
                     jobModel.CurrentJobStatus = JobStatus.STARTED;
                     jobId = await _jobRepository.SaveJob(jobModel);
                     //Run the job in the background
+                    backgroundTaskQueue.QueueBackgroundWorkItem(jobModel);
+
+                    //check if the number of current running items in background is <8 then dequeue from above queue and enqueue for background processing
+                    _queuedItems.TryDequeue(out JobModel waitingJobModel);
+
+                    backgroundTaskQueue.QueueBackgroundWorkItem(waitingJobModel);
                 }
             }
 

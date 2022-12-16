@@ -7,6 +7,7 @@ using RequestProcessor.Data;
 using RequestProcessor.Data.Interfaces;
 using RequestProcessor.Services.Interfaces;
 using RequestProcessor.Services;
+using RequestProcessor.Services.BackgroundServices;
 
 namespace RequestProcessor.Api
 {
@@ -36,8 +37,13 @@ namespace RequestProcessor.Api
                 });
             });
 
+           
             services.AddScoped<IJobRepository, JobRepository>();
             services.AddScoped<IRequestProcessService, RequestProcessService>();
+            services.AddHostedService<BackgroundProcessingService>();
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundWorkerQueue>();
+           
+           
 
         }
 

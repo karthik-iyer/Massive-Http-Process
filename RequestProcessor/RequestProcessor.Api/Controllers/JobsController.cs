@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RequestProcessor.Core.Models;
+using RequestProcessor.Services.BackgroundServices;
 using RequestProcessor.Services.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace RequestProcessor.Api.Controllers
@@ -15,9 +13,12 @@ namespace RequestProcessor.Api.Controllers
     public class JobsController : ControllerBase
     {
         private readonly IRequestProcessService _requestProcessService;
-        public JobsController(IRequestProcessService requestProcessService)
+        private readonly IBackgroundTaskQueue _backgroundTaskQueue;
+
+        public JobsController(IRequestProcessService requestProcessService, IBackgroundTaskQueue backgroundTaskQueue)
         {
-            _requestProcessService = requestProcessService;                
+            _requestProcessService = requestProcessService;
+            _backgroundTaskQueue = backgroundTaskQueue;
         }
 
 
@@ -28,7 +29,7 @@ namespace RequestProcessor.Api.Controllers
             
             try
             {
-                var jobId = await _requestProcessService.ProcessBackgroundJob(httpRequestModel);
+                var jobId = await _requestProcessService.ProcessBackgroundJob(httpRequestModel, _backgroundTaskQueue);
                 return Ok(jobId);
 
             }

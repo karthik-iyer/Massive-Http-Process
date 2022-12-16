@@ -1,6 +1,7 @@
 using Moq;
 using RequestProcessor.Core.Models;
 using RequestProcessor.Data.Interfaces;
+using RequestProcessor.Services.BackgroundServices;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -41,7 +42,7 @@ namespace RequestProcessor.Services.Test
             _jobRepositoryMock.Setup(x => x.SaveJob(It.IsAny<JobModel>())).ReturnsAsync(Guid.NewGuid().ToString());
 
             //Act
-            var result = await _requestProcessService.ProcessBackgroundJob(new HttpRequestModel{ ClientId = Guid.NewGuid()});
+            var result = await _requestProcessService.ProcessBackgroundJob(new HttpRequestModel{ ClientId = Guid.NewGuid()},It.IsAny<IBackgroundTaskQueue>());
 
 
             //Assert
@@ -54,9 +55,9 @@ namespace RequestProcessor.Services.Test
             //Arrange
             _jobRepositoryMock.Setup(x => x.IsClientIdRunningJobsMoreThanTwo(It.IsAny<string>())).ReturnsAsync(false);
             _jobRepositoryMock.Setup(x => x.SaveJob(It.IsAny<JobModel>())).ReturnsAsync(Guid.NewGuid().ToString());
-
+            var mockBackgroundTaskQueue = new Mock<IBackgroundTaskQueue>();
             //Act
-            var result = await _requestProcessService.ProcessBackgroundJob(new HttpRequestModel() { ClientId = Guid.NewGuid()});
+            var result = await _requestProcessService.ProcessBackgroundJob(new HttpRequestModel() { ClientId = Guid.NewGuid()},mockBackgroundTaskQueue.Object);
 
 
             //Assert
@@ -71,8 +72,9 @@ namespace RequestProcessor.Services.Test
             _jobRepositoryMock.Setup(x => x.IsMaxNumberOfJobsInRunningState()).ReturnsAsync(false);
             _jobRepositoryMock.Setup(x => x.SaveJob(It.IsAny<JobModel>())).ReturnsAsync(Guid.NewGuid().ToString());
 
+            var mockBackgroundTaskQueue = new Mock<IBackgroundTaskQueue>();
             //Act
-            var result = await _requestProcessService.ProcessBackgroundJob(new HttpRequestModel() { ClientId = Guid.NewGuid() });
+            var result = await _requestProcessService.ProcessBackgroundJob(new HttpRequestModel() { ClientId = Guid.NewGuid() }, mockBackgroundTaskQueue.Object);
 
 
             //Assert
@@ -88,7 +90,7 @@ namespace RequestProcessor.Services.Test
             _jobRepositoryMock.Setup(x => x.SaveJob(It.IsAny<JobModel>())).ReturnsAsync(Guid.NewGuid().ToString());
 
             //Act
-            var result = await _requestProcessService.ProcessBackgroundJob(new HttpRequestModel() { ClientId = Guid.NewGuid() });
+            var result = await _requestProcessService.ProcessBackgroundJob(new HttpRequestModel() { ClientId = Guid.NewGuid() }, It.IsAny<IBackgroundTaskQueue>());
 
 
             //Assert

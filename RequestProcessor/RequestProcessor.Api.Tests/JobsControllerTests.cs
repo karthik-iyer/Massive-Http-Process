@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RequestProcessor.Api.Controllers;
 using RequestProcessor.Core.Models;
+using RequestProcessor.Services.BackgroundServices;
 using RequestProcessor.Services.Interfaces;
 using System;
 using System.Threading.Tasks;
@@ -12,10 +13,12 @@ namespace RequestProcessor.Api.Tests
     public class JobsControllerTests
     {
         private readonly Mock<IRequestProcessService> _requestProcessServiceMock = new Mock<IRequestProcessService>();
+
+        private readonly Mock<IBackgroundTaskQueue> _backgroundTaskQueueMock = new Mock<IBackgroundTaskQueue>();
         private readonly JobsController _jobsController;
         public JobsControllerTests()
         {
-            _jobsController = new JobsController(_requestProcessServiceMock.Object);
+            _jobsController = new JobsController(_requestProcessServiceMock.Object,_backgroundTaskQueueMock.Object);
         }
 
         [Fact]
@@ -23,7 +26,7 @@ namespace RequestProcessor.Api.Tests
         {
             var httpRequestModel = new HttpRequestModel();
             //Arrange
-            _requestProcessServiceMock.Setup(x => x.ProcessBackgroundJob(It.IsAny<HttpRequestModel>())).ThrowsAsync(new Exception());
+            _requestProcessServiceMock.Setup(x => x.ProcessBackgroundJob(It.IsAny<HttpRequestModel>(),It.IsAny<IBackgroundTaskQueue>())).ThrowsAsync(new Exception());
 
             //Act
             var result = await _jobsController.CreateJob(httpRequestModel);
@@ -38,7 +41,7 @@ namespace RequestProcessor.Api.Tests
         {
             var httpRequestModel = new HttpRequestModel();
             //Arrange
-            _requestProcessServiceMock.Setup(x => x.ProcessBackgroundJob(It.IsAny<HttpRequestModel>())).ReturnsAsync(Guid.NewGuid().ToString());
+            _requestProcessServiceMock.Setup(x => x.ProcessBackgroundJob(It.IsAny<HttpRequestModel>(), It.IsAny<IBackgroundTaskQueue>())).ReturnsAsync(Guid.NewGuid().ToString());
 
             //Act
             var result = await _jobsController.CreateJob(httpRequestModel);
