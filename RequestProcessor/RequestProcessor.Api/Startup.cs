@@ -8,6 +8,8 @@ using RequestProcessor.Data.Interfaces;
 using RequestProcessor.Services.Interfaces;
 using RequestProcessor.Services;
 using RequestProcessor.Services.BackgroundServices;
+using Cloudmersive.APIClient.NET.Validate.Api;
+using Cloudmersive.APIClient.NET.Validate.Client;
 
 namespace RequestProcessor.Api
 {
@@ -42,8 +44,12 @@ namespace RequestProcessor.Api
             services.AddScoped<IRequestProcessService, RequestProcessService>();
             services.AddHostedService<BackgroundProcessingService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundWorkerQueue>();
-           
-           
+            services.AddScoped<IDomainApi, DomainApi>();
+            //didnt want to checkin actual key
+            //Configuration.Default.AddApiKey("Apikey", "YOUR_API_KEY");
+
+
+
 
         }
 

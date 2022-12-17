@@ -1,4 +1,5 @@
-﻿using RequestProcessor.Core.Models;
+﻿using Cloudmersive.APIClient.NET.Validate.Api;
+using RequestProcessor.Core.Models;
 using RequestProcessor.Data.Interfaces;
 using RequestProcessor.Services.BackgroundServices;
 using RequestProcessor.Services.Interfaces;
@@ -11,11 +12,13 @@ namespace RequestProcessor.Services
     public class RequestProcessService : IRequestProcessService
     {
         private readonly IJobRepository _jobRepository;
+        private readonly IDomainApi _domainApi;
         private ConcurrentQueue<JobModel> _queuedItems = new ConcurrentQueue<JobModel>();
 
-        public RequestProcessService(IJobRepository jobRepository)
+        public RequestProcessService(IJobRepository jobRepository,IDomainApi domainApi)
         {
             _jobRepository = jobRepository;
+            _domainApi = domainApi;
 
         }
 
@@ -110,7 +113,9 @@ namespace RequestProcessor.Services
         /// <returns></returns>
         private async Task<bool> ValidateRequest(HttpRequestModel httpRequestModel)
         {
-            //Call Cloudmersive SDK Here for Validating Security Issues like SSRF. 
+            //Call Cloudmersive SDK Here for Validating Security Issues like SSRF. Call the below api . This is commented due
+            //await _domainApi.DomainSsrfCheckAsync(new Cloudmersive.APIClient.NET.Validate.Model.UrlSsrfRequestFull() { URL = "https://test.com", BlockedDomains = new System.Collections.Generic.List<string>() {""}});
+
             //Validate Input parameters 
             //Return true if validation passed else false
 

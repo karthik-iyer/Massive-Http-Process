@@ -1,3 +1,4 @@
+using Cloudmersive.APIClient.NET.Validate.Api;
 using Moq;
 using RequestProcessor.Core.Models;
 using RequestProcessor.Data.Interfaces;
@@ -11,11 +12,13 @@ namespace RequestProcessor.Services.Test
     public class RequestProcessServiceTests
     {
         private readonly Mock<IJobRepository> _jobRepositoryMock = new Mock<IJobRepository>();
+        private readonly Mock<IDomainApi> _domainApiMock = new Mock<IDomainApi>();
+
         private readonly RequestProcessService _requestProcessService;
 
         public RequestProcessServiceTests()
         {
-            _requestProcessService = new RequestProcessService(_jobRepositoryMock.Object);
+            _requestProcessService = new RequestProcessService(_jobRepositoryMock.Object,_domainApiMock.Object);
             
         }
 
