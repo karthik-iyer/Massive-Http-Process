@@ -37,14 +37,14 @@ namespace RequestProcessor.Data
         public async Task<JobModel> GetJob(string JobId)
         {
             //Here there should be a read from the Database to get the job model corresponding to the JobId
-            return await Task.FromResult( new JobModel());
+            return await Task.FromResult( new JobModel() {  JobId = JobId, CurrentJobStatus = JobStatus.NOT_STARTED});
         }
 
         public async Task<string> SaveJob(JobModel jobModel)
         {
             //After the job is processed the Job needs to be Saved to the DB with latest status
             var jobId = Guid.NewGuid();
-            return await Task.FromResult($"Successfully Saved Job. JobId {jobId}");
+            return await Task.FromResult(jobId.ToString());
         }
 
         /// <summary>
