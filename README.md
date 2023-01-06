@@ -33,3 +33,18 @@ In the below block diagram, I am explaining the flow of the traffic and how the 
 7. The Number of simultaneous jobs that can be run at a time are by default to 8.
 
 8. The above design is also scalable with increased requests.
+
+## *How to Run this Application*
+
+Download the code and run it on https://localhost:5001/swagger
+
+It will show the 2 endpoints. 
+
+
+## *Improvements*
+
+Right now for the time consuming job its just having commented instructions. After doing an actual live implementation, more improvements needs to be done to tweak the solution.
+
+I have got the gist of the problem statement and have all the necessary logic and hooks from where we can make more improvements.
+
+I really enjoyed doing this project and learned a lot in the process. Thank You for the Opportunity.
