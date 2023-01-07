@@ -35,7 +35,52 @@ namespace RequestProcessor.Services
 
             httpResponseModel.JobStatus = jobModel.CurrentJobStatus.ToString();
 
+            httpResponseModel.HttpResponseString = GetHttpResponseString(httpResponseModel.JobStatus).Item1;
+            httpResponseModel.HttpResponseCode = GetHttpResponseString(httpResponseModel.JobStatus).Item2;
+            httpResponseModel.JobId = jobModel.JobId;
+
             return httpResponseModel;
+        }
+
+        private (string,string) GetHttpResponseString(string jobStatus)
+        {
+            var responseString = string.Empty;
+            var responseCode = string.Empty;
+            switch (jobStatus)
+            {
+
+               
+                case "NOT_STARTED":
+                    responseString = "Job in Queue . Not Started.";
+                    responseCode = "300";
+                    break;
+                case "STARTED":
+                    responseString = "Job Started";
+                    responseCode = "201";
+                    break;
+                case "FINISHED_SUCCESS":
+                    responseString = "Successfully finished job";
+                    responseCode = "200";
+                    break;
+                case "FINISHED_FAILED":
+                    responseString = "400/500 Code : FINISHED_FAILED";
+                    responseCode = "400";
+                    break;
+                case "FINISHED_TIMEOUT":
+                    responseString = "Job took more than 10 minutes. FINISHED_TIMEOUT";
+                    responseCode = "600";
+                    break;
+                default:
+                    responseString = string.Empty;
+                    break;
+
+            }
+
+
+
+            return (responseString,responseCode);
+
+
         }
 
         /// <summary>
